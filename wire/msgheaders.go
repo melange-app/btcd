@@ -68,6 +68,7 @@ func (msg *MsgHeaders) BtcDecode(r io.Reader, pver uint32) error {
 				"transactions [count %v]", txCount)
 			return messageError("MsgHeaders.BtcDecode", str)
 		}
+
 		msg.AddBlockHeader(&bh)
 	}
 

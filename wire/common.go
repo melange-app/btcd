@@ -31,6 +31,7 @@ func readElement(r io.Reader, element interface{}) error {
 		if err != nil {
 			return err
 		}
+
 		*e = int32(binary.LittleEndian.Uint32(b))
 		return nil
 
@@ -40,6 +41,7 @@ func readElement(r io.Reader, element interface{}) error {
 		if err != nil {
 			return err
 		}
+
 		*e = binary.LittleEndian.Uint32(b)
 		return nil
 

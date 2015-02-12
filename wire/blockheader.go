@@ -15,7 +15,9 @@ const BlockVersion = 2
 
 // Version 4 bytes + Timestamp 4 bytes + Bits 4 bytes + Nonce 4 bytes +
 // PrevBlock and MerkleRoot hashes.
-const MaxBlockHeaderPayload = 16 + (HashSize * 2)
+// + block_hash + coinbase_txn + merkle branch * 2 + parent_block
+// const MaxBlockHeaderPayload = 16 + (HashSize * 2)
+const MaxBlockHeaderPayload = 1000000
 
 // BlockHeader defines information about a block and is used in the bitcoin
 // block (MsgBlock) and headers (MsgHeaders) messages.
@@ -38,6 +40,9 @@ type BlockHeader struct {
 
 	// Nonce used to generate the block.
 	Nonce uint32
+
+	// AuxPowHeader contains the extra fields for a block that is merged mined.
+	AuxPowHeader *AuxPow
 }
 
 // blockHeaderLen is a constant that represents the number of bytes for a block
@@ -112,6 +117,17 @@ func readBlockHeader(r io.Reader, pver uint32, bh *BlockHeader) error {
 		return err
 	}
 	bh.Timestamp = time.Unix(int64(sec), 0)
+
+	if bh.Version&blockVersionAuxPow != 0 {
+		// this block contains auxiliary information
+		ap := &AuxPow{}
+		err = readAuxPow(r, pver, ap)
+		if err != nil {
+			return err
+		}
+
+		bh.AuxPowHeader = ap
+	}
 
 	return nil
 }
