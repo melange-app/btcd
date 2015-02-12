@@ -1,10 +1,7 @@
-btcd
+nmcd
 ====
 
-[![Build Status](https://travis-ci.org/btcsuite/btcd.png?branch=master)]
-(https://travis-ci.org/btcsuite/btcd)
-
-btcd is an alternative full node bitcoin implementation written in Go (golang).
+nmcd is an alternative full node **namecoin** implementation written in Go (golang).
 
 This project is currently under active development and is in a Beta state.  It
 is extremely stable and has been in production use for over 6 months as of May
