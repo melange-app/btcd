@@ -708,6 +708,22 @@ func ReadResultCmd(cmd string, message []byte) (Reply, error) {
 				result.Result = res
 			}
 		}
+
+	// ----------------------
+	// BEGIN NAMECOIN RESULTS
+	// ----------------------
+
+	case "name_history":
+		var res []NameInfoResult
+		err = json.Unmarshal(objmap["result"], &res)
+		if err == nil {
+			result.Result = res
+		}
+
+	// --------------------
+	// END NAMECOIN RESULTS
+	// --------------------
+
 	// For commands that return a single item (or no items), we get it with
 	// the correct concrete type for free (but treat them separately
 	// for clarity).

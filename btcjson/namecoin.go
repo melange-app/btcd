@@ -503,6 +503,45 @@ func (n *NameHistoryCmd) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+type NameInfoResult struct {
+	Name      string
+	Value     string
+	TX        string
+	Address   string
+	ExpiresIn int
+	Expired   bool
+}
+
+// nameInfoResult is used as a temporary store for the JSON unmarshalling of
+// NameInfoResult (capital N).
+type nameInfoResult struct {
+	Name      string `json:"name"`
+	Value     string `json:"value"`
+	TX        string `json:"txid"`
+	Address   string `json:"address"`
+	ExpiresIn int    `json:"expires_in"`
+	Expired   int    `json:"expired"`
+}
+
+func (n *NameInfoResult) UnmarshalJSON(b []byte) error {
+	var res *nameInfoResult
+	err := json.Unmarshal(b, &res)
+	if err != nil {
+		return err
+	}
+
+	*n = NameInfoResult{
+		Name:      res.Name,
+		Value:     res.Value,
+		TX:        res.TX,
+		Address:   res.Address,
+		ExpiresIn: res.ExpiresIn,
+		Expired:   res.Expired == 1,
+	}
+
+	return nil
+}
+
 var _ Cmd = &NameListCmd{}
 
 // NameListCmd implements "name_list"
