@@ -5,8 +5,8 @@
 package main
 
 import (
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/melange-app/nmcd/blockchain"
+	"github.com/melange-app/nmcd/wire"
 )
 
 // RuleError identifies a rule violation.  It is used to indicate that

@@ -5,8 +5,8 @@
 package main
 
 import (
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/melange-app/nmcd/chaincfg"
+	"github.com/melange-app/nmcd/wire"
 )
 
 // activeNetParams is a pointer to the parameters specific to the
@@ -29,15 +29,9 @@ type params struct {
 // to emulate the full reference implementation RPC API.
 var mainNetParams = params{
 	Params:  &chaincfg.MainNetParams,
-	rpcPort: "8334",
+	rpcPort: "8336",
 	dnsSeeds: []string{
-		"seed.bitcoin.sipa.be",
-		"dnsseed.bluematt.me",
-		"dnsseed.bitcoin.dashjr.org",
-		"seed.bitcoinstats.com",
-		"seed.bitnodes.io",
-		"bitseed.xf2.org",
-		"seeds.bitcoin.open-nodes.org",
+		"namecoin.getmelange.com",
 	},
 }
 

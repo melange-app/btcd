@@ -11,11 +11,11 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/melange-app/nmcd/blockchain"
+	"github.com/melange-app/nmcd/database"
+	"github.com/melange-app/nmcd/txscript"
+	"github.com/melange-app/nmcd/wire"
+	"github.com/melange-app/nmcd/btcutil"
 	"golang.org/x/crypto/ripemd160"
 )
 

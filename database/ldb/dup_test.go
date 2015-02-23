@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/melange-app/nmcd/database"
+	"github.com/melange-app/nmcd/wire"
+	"github.com/melange-app/nmcd/btcutil"
 )
 
 func Test_dupTx(t *testing.T) {

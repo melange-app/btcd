@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/btcsuite/btcd/addrmgr"
+	"github.com/melange-app/nmcd/addrmgr"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/melange-app/nmcd/blockchain"
+	"github.com/melange-app/nmcd/database"
+	"github.com/melange-app/nmcd/txscript"
+	"github.com/melange-app/nmcd/wire"
 	"github.com/btcsuite/btclog"
 	"github.com/btcsuite/seelog"
 )

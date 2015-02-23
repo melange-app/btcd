@@ -11,10 +11,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/melange-app/nmcd/btcec"
+	"github.com/melange-app/nmcd/chaincfg"
+	"github.com/melange-app/nmcd/wire"
+	"github.com/melange-app/nmcd/btcutil"
 )
 
 var (

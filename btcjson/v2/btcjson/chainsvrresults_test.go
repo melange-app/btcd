@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/btcsuite/btcd/btcjson/v2/btcjson"
+	"github.com/melange-app/nmcd/btcjson/v2/btcjson"
 )
 
 // TestChainSvrCustomResults ensures any results that have custom marshalling

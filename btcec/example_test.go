@@ -8,8 +8,8 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/melange-app/nmcd/btcec"
+	"github.com/melange-app/nmcd/wire"
 )
 
 // This example demonstrates signing a message with a secp256k1 private key that

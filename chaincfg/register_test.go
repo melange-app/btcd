@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	. "github.com/btcsuite/btcd/chaincfg"
+	. "github.com/melange-app/nmcd/chaincfg"
 )
 
 // Define some of the required parameters for a user-registered

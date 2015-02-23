@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/btcsuite/btcd/database"
-	_ "github.com/btcsuite/btcd/database/ldb"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/melange-app/nmcd/database"
+	_ "github.com/melange-app/nmcd/database/ldb"
+	"github.com/melange-app/nmcd/wire"
+	"github.com/melange-app/nmcd/btcutil"
 )
 
 var tstBlocks []*btcutil.Block

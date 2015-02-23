@@ -10,11 +10,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/melange-app/nmcd/btcec"
+	"github.com/melange-app/nmcd/chaincfg"
+	"github.com/melange-app/nmcd/txscript"
+	"github.com/melange-app/nmcd/wire"
+	"github.com/melange-app/nmcd/btcutil"
 )
 
 // builderScript is a convenience function which is used in the tests.  It

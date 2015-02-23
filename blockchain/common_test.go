@@ -13,13 +13,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/database"
-	_ "github.com/btcsuite/btcd/database/ldb"
-	_ "github.com/btcsuite/btcd/database/memdb"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/melange-app/nmcd/blockchain"
+	"github.com/melange-app/nmcd/chaincfg"
+	"github.com/melange-app/nmcd/database"
+	_ "github.com/melange-app/nmcd/database/ldb"
+	_ "github.com/melange-app/nmcd/database/memdb"
+	"github.com/melange-app/nmcd/wire"
+	"github.com/melange-app/nmcd/btcutil"
 )
 
 // testDbType is the database backend type to use for the tests.

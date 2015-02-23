@@ -14,11 +14,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/melange-app/nmcd/chaincfg"
+	"github.com/melange-app/nmcd/database"
+	"github.com/melange-app/nmcd/txscript"
+	"github.com/melange-app/nmcd/wire"
+	"github.com/melange-app/nmcd/btcutil"
 	"golang.org/x/crypto/ripemd160"
 )
 

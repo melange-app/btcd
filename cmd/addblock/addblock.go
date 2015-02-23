@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/database"
-	_ "github.com/btcsuite/btcd/database/ldb"
-	"github.com/btcsuite/btcd/limits"
+	"github.com/melange-app/nmcd/blockchain"
+	"github.com/melange-app/nmcd/database"
+	_ "github.com/melange-app/nmcd/database/ldb"
+	"github.com/melange-app/nmcd/limits"
 	"github.com/btcsuite/btclog"
 )
 

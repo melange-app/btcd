@@ -9,11 +9,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/database"
-	_ "github.com/btcsuite/btcd/database/ldb"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/melange-app/nmcd/blockchain"
+	"github.com/melange-app/nmcd/chaincfg"
+	"github.com/melange-app/nmcd/database"
+	_ "github.com/melange-app/nmcd/database/ldb"
+	"github.com/melange-app/nmcd/wire"
 )
 
 const blockDbNamePrefix = "blocks"

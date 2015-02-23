@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/btcsuite/btcd/wire"
+	"github.com/melange-app/nmcd/wire"
 )
 
 // TestFilterAddLatest tests the MsgFilterAdd API against the latest protocol

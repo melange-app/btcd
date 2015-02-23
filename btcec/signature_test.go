@@ -11,7 +11,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/btcsuite/btcd/btcec"
+	"github.com/melange-app/nmcd/btcec"
 )
 
 type signatureTest struct {

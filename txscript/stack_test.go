@@ -11,7 +11,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/btcsuite/btcd/txscript"
+	"github.com/melange-app/nmcd/txscript"
 )
 
 // TestStack tests that all of the stack operations work as expected.

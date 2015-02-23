@@ -10,9 +10,9 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/btcsuite/btcd/btcjson"
-	"github.com/btcsuite/btcd/btcjson/btcws"
-	"github.com/btcsuite/btcutil"
+	"github.com/melange-app/nmcd/btcjson"
+	"github.com/melange-app/nmcd/btcjson/btcws"
+	"github.com/melange-app/nmcd/btcutil"
 	flags "github.com/btcsuite/go-flags"
 	"github.com/davecgh/go-spew/spew"
 )

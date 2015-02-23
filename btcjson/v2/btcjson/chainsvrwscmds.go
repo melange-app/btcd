@@ -8,7 +8,7 @@
 package btcjson
 
 import (
-	"github.com/btcsuite/btcd/wire"
+	"github.com/melange-app/nmcd/wire"
 )
 
 // AuthenticateCmd defines the authenticate JSON-RPC command.
