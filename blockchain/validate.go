@@ -6,16 +6,17 @@ package blockchain
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"math"
 	"math/big"
 	"time"
 
+	"github.com/melange-app/nmcd/btcutil"
 	"github.com/melange-app/nmcd/chaincfg"
 	"github.com/melange-app/nmcd/database"
 	"github.com/melange-app/nmcd/txscript"
 	"github.com/melange-app/nmcd/wire"
-	"github.com/melange-app/nmcd/btcutil"
 )
 
 const (
@@ -56,6 +57,10 @@ const (
 	// CoinbaseMaturity is the number of blocks required before newly
 	// mined bitcoins (coinbase transactions) can be spent.
 	CoinbaseMaturity = 100
+
+	// MinAuxPowBlock is the height of the first block that is allowed to
+	// be merged mined versus mined for Namecoin exclusively.
+	MinAuxPowBlock = 19200
 )
 
 var (
@@ -278,7 +283,94 @@ func CheckTransactionSanity(tx *btcutil.Tx) error {
 	return nil
 }
 
-// checkProofOfWork ensures the block header bits which indicate the target
+// checkMerkleBranch ensures that a merkle branch correctly proves that a
+// hash is inside the merkle tree with the given root.
+func checkMerkleBranch(m wire.MerkleBranch, root wire.ShaHash, check wire.ShaHash) error {
+	working := check
+	for i, v := range m.BranchHash {
+		side := m.BranchSideMask & (1 << uint(i))
+
+		if side == 0 {
+			// Zero means it goes on the right
+			_ = working.SetBytes(wire.DoubleSha256(append(working[0:], v[0:]...)))
+		} else {
+			// One means it goes on the left
+			_ = working.SetBytes(wire.DoubleSha256(append(v[0:], working[0:]...)))
+		}
+	}
+
+	if working.IsEqual(&root) {
+		return nil
+	}
+
+	return errors.New("Merkle tree is not valid.")
+}
+
+func checkAuxPowProofOfWork(block *btcutil.Block, powLimit *big.Int, flags BehaviorFlags) error {
+	current := block.MsgBlock().Header
+
+	err := checkProofOfWorkBits(
+		&current.AuxPowHeader.ParentBlock,
+		powLimit,
+		current.Bits,
+		flags,
+	)
+	if err != nil {
+		return err
+	}
+
+	// Verify that the CoinbaseTx is in the Merkle Tree...
+	coinbaseSha, err := current.AuxPowHeader.CoinbaseTx.TxSha()
+	if err != nil {
+		return err
+	}
+
+	err = checkMerkleBranch(
+		current.AuxPowHeader.CoinbaseBranch,
+		current.AuxPowHeader.ParentBlock.MerkleRoot,
+		coinbaseSha,
+	)
+	if err != nil {
+		return err
+	}
+
+	if len(current.AuxPowHeader.CoinbaseTx.TxIn) < 1 {
+		return errors.New("No coinbase transaction...")
+	}
+
+	currentSha, err := current.BlockSha()
+	if err != nil {
+		return err
+	}
+
+	coinbase := current.AuxPowHeader.CoinbaseTx.TxIn[0]
+	mm, err := readMergedMiningTransaction(coinbase, &currentSha)
+	if err != nil {
+		return err
+	}
+
+	if mm.MerkleNonce != 0 && mm.MerkleSize != 1 {
+		if !currentSha.IsEqual(&mm.BlockHash) {
+			return fmt.Errorf(
+				"Coinbase TX's hash (%s) doesn't match block's (%s).",
+				mm.BlockHash,
+				currentSha,
+			)
+		}
+	} else {
+		if err := checkMerkleBranch(
+			current.AuxPowHeader.BlockchainBranch,
+			mm.BlockHash,
+			currentSha,
+		); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// checkProofOfWorkBits ensures the block header bits which indicate the target
 // difficulty is in min/max range and that the block hash is less than the
 // target difficulty as claimed.
 //
@@ -286,9 +378,9 @@ func CheckTransactionSanity(tx *btcutil.Tx) error {
 // The flags modify the behavior of this function as follows:
 //  - BFNoPoWCheck: The check to ensure the block hash is less than the target
 //    difficulty is not performed.
-func checkProofOfWork(block *btcutil.Block, powLimit *big.Int, flags BehaviorFlags) error {
+func checkProofOfWorkBits(block *wire.BlockHeader, powLimit *big.Int, targetBits uint32, flags BehaviorFlags) error {
 	// The target difficulty must be larger than zero.
-	target := CompactToBig(block.MsgBlock().Header.Bits)
+	target := CompactToBig(targetBits)
 	if target.Sign() <= 0 {
 		str := fmt.Sprintf("block target difficulty of %064x is too low",
 			target)
@@ -306,11 +398,11 @@ func checkProofOfWork(block *btcutil.Block, powLimit *big.Int, flags BehaviorFla
 	// to avoid proof of work checks is set.
 	if flags&BFNoPoWCheck != BFNoPoWCheck {
 		// The block hash must be less than the claimed target.
-		blockHash, err := block.Sha()
+		blockHash, err := block.BlockSha()
 		if err != nil {
 			return err
 		}
-		hashNum := ShaHashToBig(blockHash)
+		hashNum := ShaHashToBig(&blockHash)
 		if hashNum.Cmp(target) > 0 {
 			str := fmt.Sprintf("block hash of %064x is higher than "+
 				"expected max of %064x", hashNum, target)
@@ -319,6 +411,24 @@ func checkProofOfWork(block *btcutil.Block, powLimit *big.Int, flags BehaviorFla
 	}
 
 	return nil
+}
+
+// checkProofOfWork ensures the block header bits which indicate the target
+// difficulty is in min/max range and that the block hash is less than the
+// target difficulty as claimed.
+//
+//
+// The flags modify the behavior of this function as follows:
+//  - BFNoPoWCheck: The check to ensure the block hash is less than the target
+//    difficulty is not performed.
+func checkProofOfWork(block *btcutil.Block, powLimit *big.Int, flags BehaviorFlags) error {
+	// We would check for Height issues here; however, because we do have checkpoint blocks,
+	// this shouldn't prove to be an issue.
+	if block.MsgBlock().Header.AuxPowHeader != nil {
+		return checkAuxPowProofOfWork(block, powLimit, flags)
+	}
+
+	return checkProofOfWorkBits(&block.MsgBlock().Header, powLimit, block.MsgBlock().Header.Bits, flags)
 }
 
 // CheckProofOfWork ensures the block header bits which indicate the target
