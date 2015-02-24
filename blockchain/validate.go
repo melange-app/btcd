@@ -349,7 +349,7 @@ func checkAuxPowProofOfWork(block *btcutil.Block, powLimit *big.Int, flags Behav
 		return err
 	}
 
-	if mm.MerkleNonce != 0 && mm.MerkleSize != 1 {
+	if mm.MerkleNonce == 0 && mm.MerkleSize == 1 {
 		if !currentSha.IsEqual(&mm.BlockHash) {
 			return fmt.Errorf(
 				"Coinbase TX's hash (%s) doesn't match block's (%s).",
