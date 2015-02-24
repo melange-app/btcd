@@ -16,21 +16,21 @@ import (
 	"strings"
 	"time"
 
+	flags "github.com/btcsuite/go-flags"
+	"github.com/btcsuite/go-socks/socks"
+	"github.com/melange-app/nmcd/btcutil"
 	"github.com/melange-app/nmcd/database"
 	_ "github.com/melange-app/nmcd/database/ldb"
 	_ "github.com/melange-app/nmcd/database/memdb"
 	"github.com/melange-app/nmcd/wire"
-	"github.com/melange-app/nmcd/btcutil"
-	flags "github.com/btcsuite/go-flags"
-	"github.com/btcsuite/go-socks/socks"
 )
 
 const (
-	defaultConfigFilename    = "btcd.conf"
+	defaultConfigFilename    = "nmcd.conf"
 	defaultDataDirname       = "data"
 	defaultLogLevel          = "info"
 	defaultLogDirname        = "logs"
-	defaultLogFilename       = "btcd.log"
+	defaultLogFilename       = "nmcd.log"
 	defaultMaxPeers          = 125
 	defaultBanDuration       = time.Hour * 24
 	defaultMaxRPCClients     = 10
@@ -48,7 +48,7 @@ const (
 )
 
 var (
-	btcdHomeDir        = btcutil.AppDataDir("btcd", false)
+	btcdHomeDir        = btcutil.AppDataDir("nmcd", false)
 	defaultConfigFile  = filepath.Join(btcdHomeDir, defaultConfigFilename)
 	defaultDataDir     = filepath.Join(btcdHomeDir, defaultDataDirname)
 	knownDbTypes       = database.SupportedDBs()
