@@ -11,7 +11,7 @@ import (
 
 // MaxBlockHeadersPerMsg is the maximum number of block headers that can be in
 // a single bitcoin headers message.
-const MaxBlockHeadersPerMsg = 2000
+const MaxBlockHeadersPerMsg = 2001
 
 // MsgHeaders implements the Message interface and represents a bitcoin headers
 // message.  It is used to deliver block header information in response

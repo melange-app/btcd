@@ -6,7 +6,6 @@ package blockchain
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"math"
 	"math/big"
@@ -303,7 +302,7 @@ func checkMerkleBranch(m wire.MerkleBranch, root wire.ShaHash, check wire.ShaHas
 		return nil
 	}
 
-	return errors.New("Merkle tree is not valid.")
+	return ruleError(ErrAuxPowValidation, "Merkle Branch does not successfully prove hash is in the tree.")
 }
 
 func checkAuxPowProofOfWork(block *btcutil.Block, powLimit *big.Int, flags BehaviorFlags) error {
@@ -335,7 +334,7 @@ func checkAuxPowProofOfWork(block *btcutil.Block, powLimit *big.Int, flags Behav
 	}
 
 	if len(current.AuxPowHeader.CoinbaseTx.TxIn) < 1 {
-		return errors.New("No coinbase transaction...")
+		return ruleError(ErrAuxPowValidation, "Could not find Parent Block's Coinbase Transaction.")
 	}
 
 	currentSha, err := current.BlockSha()
@@ -351,11 +350,12 @@ func checkAuxPowProofOfWork(block *btcutil.Block, powLimit *big.Int, flags Behav
 
 	if mm.MerkleNonce == 0 && mm.MerkleSize == 1 {
 		if !currentSha.IsEqual(&mm.BlockHash) {
-			return fmt.Errorf(
+			errorMsg := fmt.Sprintf(
 				"Coinbase TX's hash (%s) doesn't match block's (%s).",
 				mm.BlockHash,
 				currentSha,
 			)
+			return ruleError(ErrAuxPowValidation, errorMsg)
 		}
 	} else {
 		if err := checkMerkleBranch(

@@ -178,6 +178,10 @@ const (
 	// such signature verification failures and execution past the end of
 	// the stack.
 	ErrScriptValidation
+
+	// ErrAuxPowValidation indicates that there was an error while attempting
+	// to validate the AuxPow header of the block.
+	ErrAuxPowValidation
 )
 
 // Map of ErrorCode values back to their constant names for pretty printing.
@@ -220,6 +224,7 @@ var errorCodeStrings = map[ErrorCode]string{
 	ErrBadCoinbaseHeight:     "ErrBadCoinbaseHeight",
 	ErrScriptMalformed:       "ErrScriptMalformed",
 	ErrScriptValidation:      "ErrScriptValidation",
+	ErrAuxPowValidation:      "ErrAuxPowValidation",
 }
 
 // String returns the ErrorCode as a human-readable name.

@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
-	"errors"
-	"fmt"
 
 	"github.com/melange-app/nmcd/wire"
 )
@@ -37,11 +35,12 @@ func readMergedMiningTransaction(t *wire.TxIn, blockHash *wire.ShaHash) (*merged
 		blockBytes, _ := hex.DecodeString(blockHash.String())
 		idx = bytes.Index(script, blockBytes)
 		if idx == -1 {
-			return nil, errors.New("Couldn't find the magic bytes in the signature script.")
+			return nil, ruleError(
+				ErrAuxPowValidation,
+				"Unable to locate merged mining information in Coinbase.",
+			)
 		}
 		idx = idx - len(mergedMiningMagicBytes)
-	} else {
-		fmt.Printf("Found magic bytes in %x\n", script)
 	}
 
 	data := script[idx+len(mergedMiningMagicBytes):]
