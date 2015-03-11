@@ -284,8 +284,9 @@ func CheckTransactionSanity(tx *btcutil.Tx) error {
 
 // checkMerkleBranch ensures that a merkle branch correctly proves that a
 // hash is inside the merkle tree with the given root.
-func checkMerkleBranch(m wire.MerkleBranch, root wire.ShaHash, check wire.ShaHash) error {
-	working := check
+func checkMerkleBranch(m wire.MerkleBranch, root *wire.ShaHash, check *wire.ShaHash) (*wire.ShaHash, error) {
+	working := new(wire.ShaHash)
+	*working = *check
 	for i, v := range m.BranchHash {
 		side := m.BranchSideMask & (1 << uint(i))
 
@@ -298,11 +299,15 @@ func checkMerkleBranch(m wire.MerkleBranch, root wire.ShaHash, check wire.ShaHas
 		}
 	}
 
-	if working.IsEqual(&root) {
-		return nil
+	if root == nil {
+		return working, nil
 	}
 
-	return ruleError(ErrAuxPowValidation, "Merkle Branch does not successfully prove hash is in the tree.")
+	if working.IsEqual(root) {
+		return root, nil
+	}
+
+	return nil, ruleError(ErrAuxPowValidation, "Merkle Branch does not successfully prove hash is in the tree.")
 }
 
 func checkAuxPowProofOfWork(block *btcutil.Block, powLimit *big.Int, flags BehaviorFlags) error {
@@ -324,10 +329,10 @@ func checkAuxPowProofOfWork(block *btcutil.Block, powLimit *big.Int, flags Behav
 		return err
 	}
 
-	err = checkMerkleBranch(
+	_, err = checkMerkleBranch(
 		current.AuxPowHeader.CoinbaseBranch,
-		current.AuxPowHeader.ParentBlock.MerkleRoot,
-		coinbaseSha,
+		&current.AuxPowHeader.ParentBlock.MerkleRoot,
+		&coinbaseSha,
 	)
 	if err != nil {
 		return err
@@ -342,8 +347,14 @@ func checkAuxPowProofOfWork(block *btcutil.Block, powLimit *big.Int, flags Behav
 		return err
 	}
 
+	cbRoot, _ := checkMerkleBranch(
+		current.AuxPowHeader.BlockchainBranch,
+		nil,
+		&currentSha,
+	)
+
 	coinbase := current.AuxPowHeader.CoinbaseTx.TxIn[0]
-	mm, err := readMergedMiningTransaction(coinbase, &currentSha)
+	mm, err := readMergedMiningTransaction(coinbase, &currentSha, cbRoot)
 	if err != nil {
 		return err
 	}
@@ -358,10 +369,10 @@ func checkAuxPowProofOfWork(block *btcutil.Block, powLimit *big.Int, flags Behav
 			return ruleError(ErrAuxPowValidation, errorMsg)
 		}
 	} else {
-		if err := checkMerkleBranch(
+		if _, err := checkMerkleBranch(
 			current.AuxPowHeader.BlockchainBranch,
-			mm.BlockHash,
-			currentSha,
+			&mm.BlockHash,
+			&currentSha,
 		); err != nil {
 			return err
 		}

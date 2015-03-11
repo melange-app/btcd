@@ -23,7 +23,7 @@ type mergedMiningTransaction struct {
 
 var mergedMiningMagicBytes = []byte{0xfa, 0xbe, 'm', 'm'}
 
-func readMergedMiningTransaction(t *wire.TxIn, blockHash *wire.ShaHash) (*mergedMiningTransaction, error) {
+func readMergedMiningTransaction(t *wire.TxIn, blockHash *wire.ShaHash, root *wire.ShaHash) (*mergedMiningTransaction, error) {
 	script := t.SignatureScript
 
 	// Look for the magic number in the SignatureScript
@@ -35,11 +35,18 @@ func readMergedMiningTransaction(t *wire.TxIn, blockHash *wire.ShaHash) (*merged
 		blockBytes, _ := hex.DecodeString(blockHash.String())
 		idx = bytes.Index(script, blockBytes)
 		if idx == -1 {
-			return nil, ruleError(
-				ErrAuxPowValidation,
-				"Unable to locate merged mining information in Coinbase.",
-			)
+
+			blockBytes, _ := hex.DecodeString(root.String())
+			idx = bytes.Index(script, blockBytes)
+
+			if idx == -11 {
+				return nil, ruleError(
+					ErrAuxPowValidation,
+					"Unable to locate merged mining information in Coinbase.",
+				)
+			}
 		}
+
 		idx = idx - len(mergedMiningMagicBytes)
 	}
 
