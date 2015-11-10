@@ -5,8 +5,8 @@
 package txscript
 
 import (
-	"github.com/melange-app/nmcd/chaincfg"
 	"github.com/melange-app/nmcd/btcutil"
+	"github.com/melange-app/nmcd/chaincfg"
 )
 
 // ExtractPkScriptAddrs returns the type of script, addresses and required
@@ -26,6 +26,30 @@ func ExtractPkScriptAddrs(pkScript []byte, chainParams *chaincfg.Params) (Script
 
 	scriptClass := typeOfScript(pops)
 	switch scriptClass {
+	case NameTransactionTy:
+		// Depending on the name transaction, the pubkeyhash
+		// could be in many different locations.
+		first := pops[0].opcode.value
+
+		// The address is two spaces after the end of the
+		// transaction.
+		prefix := 2
+		if first == OP_1 {
+			// OP_1 << hash << OP_2DROP
+			prefix += 3
+		} else if first == OP_2 {
+			// OP_2 << name << rand << value << OP_2DROP << OP_2DROP
+			prefix += 6
+		} else if first == OP_3 {
+			// OP_3 << name << value << OP_2DROP << OP_DROP
+			prefix += 5
+		}
+
+		addr, err := btcutil.NewAddressPubKeyHash(pops[prefix].data,
+			chainParams)
+		if err == nil {
+			addrs = append(addrs, addr)
+		}
 	case PubKeyHashTy:
 		// A pay-to-pubkey-hash script is of the form:
 		//  OP_DUP OP_HASH160 <hash> OP_EQUALVERIFY OP_CHECKSIG

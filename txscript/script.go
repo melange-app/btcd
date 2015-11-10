@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/melange-app/nmcd/btcec"
+	"github.com/melange-app/nmcd/btcutil"
 	"github.com/melange-app/nmcd/chaincfg"
 	"github.com/melange-app/nmcd/wire"
-	"github.com/melange-app/nmcd/btcutil"
 )
 
 var (
@@ -170,12 +170,13 @@ type ScriptClass byte
 
 // Classes of script payment known about in the blockchain.
 const (
-	NonStandardTy ScriptClass = iota // None of the recognized forms.
-	PubKeyTy                         // Pay pubkey.
-	PubKeyHashTy                     // Pay pubkey hash.
-	ScriptHashTy                     // Pay to script hash.
-	MultiSigTy                       // Multi signature.
-	NullDataTy                       // Empty data-only (provably prunable).
+	NonStandardTy     ScriptClass = iota // None of the recognized forms.
+	PubKeyTy                             // Pay pubkey.
+	PubKeyHashTy                         // Pay pubkey hash.
+	ScriptHashTy                         // Pay to script hash.
+	MultiSigTy                           // Multi signature.
+	NullDataTy                           // Empty data-only (provably prunable).
+	NameTransactionTy                    // Transactions for Namecoin
 )
 
 var scriptClassToName = []string{
@@ -309,6 +310,21 @@ func isNullData(pops []parsedOpcode) bool {
 		pops[0].opcode.value == OP_RETURN &&
 		pops[1].opcode.value <= OP_PUSHDATA4 &&
 		len(pops[1].data) <= 40
+}
+
+// isNameTransaction returns true if the passed script is a namecoin
+// name transaction, false otherwise
+func isNameTransaction(pops []parsedOpcode) bool {
+	// A Name transaction has at least two operations, the first
+	// one is either OP_1, OP_2, or OP_3
+	l := len(pops)
+	if l < 2 {
+		return false
+	}
+
+	first := pops[0].opcode.value
+
+	return first == OP_1 || first == OP_2 || first == OP_3
 }
 
 // isPushOnly returns true if the script only pushes data, false otherwise.
@@ -525,6 +541,8 @@ func typeOfScript(pops []parsedOpcode) ScriptClass {
 		return MultiSigTy
 	} else if isNullData(pops) {
 		return NullDataTy
+	} else if isNameTransaction(pops) {
+		return NameTransactionTy
 	}
 	return NonStandardTy
 
@@ -1358,6 +1376,9 @@ func sign(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
 		}
 
 		return script, class, addresses, nrequired, nil
+	case NameTransactionTy:
+		// Treat this transaction just like a PubKeyHashTy
+		fallthrough
 	case PubKeyHashTy:
 		// look up key for address
 		key, compressed, err := kdb.GetKey(addresses[0])
