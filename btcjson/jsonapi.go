@@ -730,7 +730,8 @@ func rpcRawCommand(user string, password string, server string,
 		err := fmt.Errorf("error sending json message: " + err.Error())
 		return result, err
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK &&
+		resp.StatusCode != http.StatusInternalServerError {
 		return nil, BadStatusCode(resp.StatusCode)
 	}
 	result, err = GetRaw(resp.Body)

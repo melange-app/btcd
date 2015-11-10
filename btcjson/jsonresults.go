@@ -720,6 +720,13 @@ func ReadResultCmd(cmd string, message []byte) (Reply, error) {
 			result.Result = res
 		}
 
+	case "name_show":
+		var res *NameInfoResult
+		err = json.Unmarshal(objmap["result"], &res)
+		if err == nil {
+			result.Result = res
+		}
+
 	// --------------------
 	// END NAMECOIN RESULTS
 	// --------------------
