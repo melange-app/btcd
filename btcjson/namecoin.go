@@ -503,6 +503,13 @@ func (n *NameHistoryCmd) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+type NameScanResult struct {
+	Name      string `json:"name"`
+	Value     string `json:"value"`
+	Expired   int    `json:"expired"`
+	ExpiresIn int    `json:"expires_in"`
+}
+
 type NameInfoResult struct {
 	Name      string
 	Value     string

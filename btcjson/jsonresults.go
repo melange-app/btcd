@@ -24,7 +24,7 @@ type BlockResult struct {
 	RawTx         []TxRawResult `json:"rawtx,omitempty"`
 	Time          int64         `json:"time"`
 	Nonce         uint32        `json:"nonce"`
-	Bits          string        `json:"bits"`
+	Bits          int64         `json:"bits"`
 	Difficulty    float64       `json:"difficulty"`
 	PreviousHash  string        `json:"previousblockhash"`
 	NextHash      string        `json:"nextblockhash"`
@@ -722,6 +722,13 @@ func ReadResultCmd(cmd string, message []byte) (Reply, error) {
 
 	case "name_show":
 		var res *NameInfoResult
+		err = json.Unmarshal(objmap["result"], &res)
+		if err == nil {
+			result.Result = res
+		}
+
+	case "name_scan":
+		var res []*NameScanResult
 		err = json.Unmarshal(objmap["result"], &res)
 		if err == nil {
 			result.Result = res
